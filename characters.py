@@ -1,40 +1,51 @@
 import pygame as game
 
 #motion can 
-class character:
+class character(game.sprite.Sprite):
     def __init__(self,widthOfWindow,heightOfWindow):
-        self.widthOfWindow= widthOfWindow
+        game.sprite.Sprite.__init__(self)
+        self.widthOfWindow = widthOfWindow
         self.heightOfWindow = heightOfWindow
         self.width = 75
         self.height = 150
-        self.x = 10
-        self.y = heightOfWindow - self.height
+        # create a plain rectangle for the sprite image | THIS is WIDTH and HEIGHT
+        self.image = game.Surface((self.width, self.height))
+        self.image.fill((255,0,0))
+        # find the rectangle that encloses the image
+        self.rect = self.image.get_rect()
+        # center the sprite on the screen | THIS IS NOT X or Y, this is just the coordinates of the center
+        self.rect.center = (50, 50)
         self.dx = 10
-        self.dy = 50
+        self.dy = 0
         self.movingRight = False
         self.movingLeft = False
-        self.jumping = False
+        self.somethingUnder = False
+        self.gravity = 3
 
-    def draw(self,master):
+    def somethingUnderTrue(self):
+        self.somethingUnder = True
+        self.dy = 0
+    
+    def notSomethingUnder(self):
+        self.somethingUnder = False
+
+    def update(self):
         self.fall()
         self.move()
-        game.draw.rect(master,(255,0,0),(self.x,self.y,self.width,self.height))
-
+        
     def move(self):
-        if self.movingRight and self.x + self.width + self.dx < self.widthOfWindow:
-            self.x += self.dx
-        if self.movingLeft and self.x - self.dx > 0:
-            self.x -= self.dx
+        #Right and left vary depending on the coordiantes, so right will be: x + width = right
+        if self.movingRight and self.rect.right + self.dx < self.widthOfWindow:
+            self.rect.x += self.dx
+        if self.movingLeft and self.rect.x - self.dx > 0:
+            self.rect.x -= self.dx
 
     def jump(self):
-        self.jumping = True
+        if self.somethingUnder:
+            self.somethingUnder = False
+            self.dy = 50
 
     def fall(self):
-        if self.jumping:
-            if self.y + self.height - self.dy <= self.heightOfWindow:
-                self.y -= self.dy
-                self.dy -= 3
-            else:
-                self.y = self.heightOfWindow - self.height
-                self.dy = 50
-                self.jumping = False
+        if not self.somethingUnder:
+            self.rect.y -= self.dy
+            self.dy -= 3
