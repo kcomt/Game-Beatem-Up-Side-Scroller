@@ -19,8 +19,10 @@ class character(game.sprite.Sprite):
         self.dy = 0
         self.movingRight = False
         self.movingLeft = False
+
         self.somethingUnder = False
         self.gravity = 3
+        self.falling = False
 
     def somethingUnderTrue(self):
         self.somethingUnder = True
@@ -52,3 +54,8 @@ class character(game.sprite.Sprite):
                 self.dy -= self.gravity
             else:
                 self.dy = -51
+
+            if self.dy <= 0:
+                self.falling = True
+        else:
+            self.falling = False
