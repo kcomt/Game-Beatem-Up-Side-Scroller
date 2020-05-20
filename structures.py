@@ -1,6 +1,6 @@
 import pygame as game
 class structure(game.sprite.Sprite):
-    def __init__(self,width,height,x,y):
+    def __init__(self,width,height,x,y,typeOf):
         game.sprite.Sprite.__init__(self)
         self.width = width
         self.height = height
@@ -11,3 +11,4 @@ class structure(game.sprite.Sprite):
         self.rect = self.image.get_rect()
         # center the sprite on the screen | THIS IS NOT X or Y, this is just the coordinates of the center
         self.rect.center = (x, y)
+        self.typeOf = typeOf

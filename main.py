@@ -14,9 +14,9 @@ class controller:
         self.height = 800
         self.master = game.display.set_mode((self.width,self.height))
         self.character = characters.character(self.width, self.height)
-        self.structure1 = structures.structure(200,20,600,400)
-        self.structure2 = structures.structure(20,300,1000,self.height-300/2)
-        self.structure3 = structures.structure(1200,20,600,790)
+        self.structure1 = structures.structure(200,20,600,400,"platform")
+        self.structure2 = structures.structure(20,300,1000,self.height-300/2,"platform")
+        self.structure3 = structures.structure(1200,20,600,790,"floor")
 
         self.all_sprites = game.sprite.Group()
         self.platforms = game.sprite.Group()
@@ -61,9 +61,16 @@ class controller:
         hits = game.sprite.spritecollide(self.character,self.platforms,False)
         self.character.rect.y -= 1
         if hits:
-            self.character.rect.y = hits[0].rect.top - self.character.height
-            self.character.somethingUnderTrue()
+            if self.character.rect.bottom  < hits[0].rect.bottom and hits[0].typeOf != "floor":
+                self.character.rect.y = hits[0].rect.top - self.character.height
+                self.character.somethingUnderTrue()
+
+            elif hits[0].typeOf == "floor":
+                self.character.rect.y = hits[0].rect.top - self.character.height
+                self.character.somethingUnderTrue()
         else:
+            if self.character.rect.y > 600 and self.character.rect.y < 1000:
+                print(self.structure3.rect.bottom)
             self.character.notSomethingUnder()
 
 controller = controller()

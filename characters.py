@@ -14,7 +14,7 @@ class character(game.sprite.Sprite):
         # find the rectangle that encloses the image
         self.rect = self.image.get_rect()
         # center the sprite on the screen | THIS IS NOT X or Y, this is just the coordinates of the center
-        self.rect.center = (50, 50)
+        self.rect.center = (50, 200)
         self.dx = 10
         self.dy = 0
         self.movingRight = False
@@ -43,9 +43,12 @@ class character(game.sprite.Sprite):
     def jump(self):
         if self.somethingUnder:
             self.somethingUnder = False
-            self.dy = 50
+            self.dy = 51
 
     def fall(self):
         if not self.somethingUnder:
             self.rect.y -= self.dy
-            self.dy -= 3
+            if self.dy - self.gravity > -51:
+                self.dy -= self.gravity
+            else:
+                self.dy = -51
