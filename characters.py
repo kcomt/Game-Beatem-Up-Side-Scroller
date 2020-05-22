@@ -20,13 +20,20 @@ class character(game.sprite.Sprite):
         #Movement
         self.dx = 10
         self.dy = 0
-        self.movingRight = False
-        self.movingLeft = False
+        self.colliFromHori = False
         self.somethingUnder = False
         self.gravity = 3
         self.falling = True
+
         self.controller = controller
-        
+        self.frameLag = 0
+
+    def tick(self):
+        if self.frameLag > 0:
+            self.rect.x += self.dx
+        else:
+            self.dx = 10
+
     def somethingUnderTrue(self):
         self.somethingUnder = True
         self.dy = 0
@@ -36,48 +43,38 @@ class character(game.sprite.Sprite):
 
     def update(self):
         self.fall()
-        self.move()
+        if self.frameLag == 0:
+            self.dx = 10
 
-    def move(self):
-        self.rect.y += 1
-        hits = game.sprite.spritecollide(self,self.controller.platforms,False)
-        self.rect.y -= 1
-        if hits:
-            if self.falling and self.rect.bottom  < hits[0].rect.bottom and hits[0].typeOf != "floor":
-                self.rect.y = hits[0].rect.top - self.height
-                self.somethingUnderTrue()
-
-            elif hits[0].typeOf == "floor":
-                self.rect.y = hits[0].rect.top - self.height
-                self.somethingUnderTrue()
-        else:
-            self.notSomethingUnder()
-
+    def moveH(self,key):
         #Right and left vary depending on the coordiantes, so right will be: x + width = right
-        if self.movingRight and self.rect.right + self.dx < self.widthOfWindow:
+        self.colliFromHori = False
+        if key=="right" and self.rect.right + self.dx < self.widthOfWindow and self.frameLag == 0:
             self.rect.x += self.dx
             hits = game.sprite.spritecollide(self,self.controller.platforms,False)
             self.rect.x -= self.dx
 
-            if hits and hits[0].typeOf == "wall":
-                self.rect.x = hits[0].rect.left - self.width
+            if hits:
+                if hits[0].typeOf == "wall":
+                    self.rect.x = hits[0].rect.left - self.width
+                if hits[0].typeOf == "platform":
+                    self.rect.x += self.dx
+                    self.colliFromHori = True
             else:
                 self.rect.x += self.dx
 
-        if self.movingLeft and self.rect.x - self.dx > 0:
+        if key=="left" and self.rect.x - self.dx > 0 and self.frameLag == 0:
             self.rect.x -= self.dx
             hits = game.sprite.spritecollide(self,self.controller.platforms,False)
             self.rect.x += self.dx
-
-            if hits and hits[0].typeOf == "wall":
-                self.rect.x = hits[0].rect.right
+            if hits:
+                if hits[0].typeOf == "wall":
+                    self.rect.x = hits[0].rect.right
+                if hits[0].typeOf == "platform":
+                    self.rect.x -= self.dx
+                    self.colliFromHori = True
             else:
                 self.rect.x -= self.dx
-
-    def jump(self):
-        if self.somethingUnder:
-            self.somethingUnder = False
-            self.dy = 51
 
     def fall(self):
         if not self.somethingUnder:
@@ -91,17 +88,52 @@ class character(game.sprite.Sprite):
                 self.falling = True
         else:
             self.falling = False
+
+        self.rect.y += 1
+        hits = game.sprite.spritecollide(self,self.controller.platforms,False)
+        self.rect.y -= 1
+        if hits:
+            if self.falling and self.rect.top < hits[0].rect.bottom and hits[0].typeOf == "platform" and not self.colliFromHori:
+                self.rect.y = hits[0].rect.top - self.height
+                self.somethingUnderTrue()
+
+            if self.falling and self.rect.bottom < hits[0].rect.bottom and hits[0].typeOf == "wall":
+                self.rect.y = hits[0].rect.top - self.height
+                self.somethingUnderTrue()
+
+            elif hits[0].typeOf == "floor":
+                self.rect.y = hits[0].rect.top - self.height
+                self.somethingUnderTrue()
+        else:
+            self.notSomethingUnder()
+
+    def jump(self):
+        if self.somethingUnder:
+            self.somethingUnder = False
+            self.dy = 51
         
-    def wallJump(self):
-        print("TRYd")
+    def wallJumpRight(self,master):
         self.rect.x += self.dx
         hits = game.sprite.spritecollide(self,self.controller.platforms,False)
         self.rect.x -= self.dx
-        if hits:
-            print("Done")
-            self.rect.x -= 10
+        if hits and hits[0].typeOf == "wall":
+            self.frameLag = 10
+            self.dx = -16
             self.movingRight = False
             self.movingLeft = True
+            self.somethingUnder = True
+            self.jump()
+            self.dy = 20
+
+    def wallJumpLeft(self,master):
+        self.rect.x -= self.dx
+        hits = game.sprite.spritecollide(self,self.controller.platforms,False)
+        self.rect.x += self.dx
+        if hits and hits[0].typeOf == "wall":
+            self.frameLag = 10
+            self.dx = 16
+            self.movingRight = True
+            self.movingLeft = False
             self.somethingUnder = True
             self.jump()
             self.dy = 20

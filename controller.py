@@ -13,7 +13,7 @@ class controller:
         self.height = 800
         self.master = game.display.set_mode((self.width,self.height))
         self.character = characters.character(self.width, self.height,self)
-        self.structure1 = structures.structure(200,20,600,400,"platform")
+        self.structure1 = structures.structure(200,20,600,500,"platform")
         self.structure2 = structures.structure(20,600,1000,self.height-600/2,"wall")
         self.structure3 = structures.structure(1200,20,600,790,"floor")
 
@@ -29,40 +29,11 @@ class controller:
         self.aPressed = False
         self.spacePressed = False
 
-    def handleEvents(self):    
+    def handleEvents(self):
+        self.move()
         for event in game.event.get():
             if event.type == game.QUIT:
                 self.running = False
-            if event.type == game.KEYDOWN:
-                self.character.movingLeft = False
-                self.character.movingRight = False
-                #right
-                if event.key == game.K_d:
-                    self.character.movingRight = True 
-                    self.dPressed = True
-                #left
-                if event.key == game.K_a:
-                    self.character.movingLeft = True
-                #jump
-                if event.key == game.K_SPACE:
-                    self.character.jump()
-                    self.spacePressed = True
-
-            if self.dPressed and self.spacePressed:
-                self.character.wallJump()
-
-            if event.type == game.KEYUP:
-                #right
-                if event.key == game.K_d:
-                    self.character.movingRight = False
-                    self.dPressed = False
-
-                #left
-                if event.key == game.K_a:
-                    self.character.movingLeft = False
-                    self.aPressed = False
-            
-            self.spacePressed = False
 
     def draw(self):
         self.all_sprites.draw(self.master)
@@ -70,6 +41,24 @@ class controller:
         
     def tick(self):
         self.clock.tick(self.frameRate)
+        self.character.tick()
+        if self.character.frameLag > 0:
+            self.character.frameLag -= 1
         
     def update(self):
         self.all_sprites.update()
+
+    def move(self):
+        keys=game.key.get_pressed()
+        if keys[game.K_d]:
+            self.character.moveH("right")
+        if keys[game.K_a]:
+            self.character.moveH("left")
+        if keys[game.K_SPACE]:
+            self.character.jump()
+        
+        if keys[game.K_SPACE] and keys[game.K_d]:
+            self.character.wallJumpRight(self.master)
+        
+        if keys[game.K_SPACE] and keys[game.K_a]:
+            self.character.wallJumpLeft(self.master)
