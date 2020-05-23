@@ -1,9 +1,12 @@
 import pygame as game
 import characters,structures
+from os import path
+from characters import *
 
 class controller:
     def __init__(self):
         game.init()
+        game.mixer.init()
         #(delay,interval), the delay is the number of milliseconds before the first repeated pygame.KEYDOWN will be sent
         game.key.set_repeat(75,75)
         self.clock = game.time.Clock()
@@ -12,6 +15,7 @@ class controller:
         self.width = 1200
         self.height = 800
         self.master = game.display.set_mode((self.width,self.height))
+        self.load()
         self.character = characters.character(self.width, self.height,self)
         self.structure1 = structures.structure(200,20,600,500,"platform")
         self.structure2 = structures.structure(20,600,1000,self.height-600/2,"wall")
@@ -28,7 +32,7 @@ class controller:
         self.dPressed = False
         self.aPressed = False
         self.spacePressed = False
-
+        
     def handleEvents(self):
         self.move()
         for event in game.event.get():
@@ -62,3 +66,10 @@ class controller:
         
         if keys[game.K_SPACE] and keys[game.K_a]:
             self.character.wallJumpLeft(self.master)
+
+    def load(self):
+        # load high score
+        self.dir = path.dirname(__file__)
+        img_dir = path.join(self.dir,'sprites')
+        # load spritesheet image
+        self.spritesheet = Spritesheet(path.join(img_dir,"2.png"))

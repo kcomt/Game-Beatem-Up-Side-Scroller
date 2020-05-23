@@ -4,8 +4,8 @@ game.init()
 controller = controller.controller()
 
 while controller.running:
-    controller.tick()
     controller.handleEvents()
+    controller.tick()
     #update
     controller.update()
     #render/erase
