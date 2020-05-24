@@ -38,47 +38,9 @@ class character(game.sprite.Sprite):
         self.indexAnimation = 0
         self.currentMove = "standing"
     
-    def setSpriteMovement(self,animation):
-        if animation == "standing":
-            self.frames = [self.controller.spritesheet.get_image(17, 2182, 38, 60),
-            self.controller.spritesheet.get_image(65, 2181, 38, 61),
-            self.controller.spritesheet.get_image(113, 2180, 39, 62),
-            self.controller.spritesheet.get_image(161, 2180, 39, 62),
-            self.controller.spritesheet.get_image(209, 2180, 39, 62),
-            self.controller.spritesheet.get_image(257, 2181, 38, 62)]
-
-        else:
-            if animation == "moveRight":
-                self.frames = [self.controller.spritesheet.get_image(11, 3408, 62, 40),
-                self.controller.spritesheet.get_image(82, 3409, 58, 38),
-                self.controller.spritesheet.get_image(144, 3405, 61, 42),
-                self.controller.spritesheet.get_image(213, 3406, 58, 43),
-                self.controller.spritesheet.get_image(277, 3411, 59, 38)]
-
-        if animation != self.currentMove:
-            self.animationLag = 5
-            self.indexAnimation = 0
-            
-        self.currentMove = animation
-
-    def setAnimation(self):
-        if self.indexAnimation < len(self.frames):
-            self.image = self.frames[self.indexAnimation]
-            auxRect = self.image.get_rect()
-            self.rect.width = auxRect.width
-            if self.rect.height > auxRect.height:
-                self.rect.y += self.rect.height - auxRect.height
-            self.rect.height = auxRect.height
-            self.indexAnimation += 1
-        else:
-            self.indexAnimation = 0
-
-    def animate(self):            
-        if self.animationLag < 4:
-            self.animationLag += 1
-        else:
-            self.setAnimation()
-            self.animationLag = 0
+        self.lastMoveRight = True
+        self.lastDirection = "right"
+        self.gravityX = 0
 
     def setMovementUp(self):
         #Movement
@@ -90,24 +52,90 @@ class character(game.sprite.Sprite):
         self.falling = True
         self.frameLag = 0
 
+    def setSpriteMovement(self,animation,direction):
+        if animation == "standing":
+            
+            if direction == "right":
+                self.frames = [self.controller.spritesheet.get_image(17, 2182, 38, 60),
+                self.controller.spritesheet.get_image(65, 2181, 38, 61),
+                self.controller.spritesheet.get_image(113, 2180, 39, 62),
+                self.controller.spritesheet.get_image(161, 2180, 39, 62),
+                self.controller.spritesheet.get_image(209, 2180, 39, 62),
+                self.controller.spritesheet.get_image(257, 2181, 38, 62)]
+            else:
+                self.frames = [game.transform.flip(self.controller.spritesheet.get_image(17, 2182, 38, 60), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(65, 2181, 38, 61), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(113, 2180, 39, 62), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(161, 2180, 39, 62), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(209, 2180, 39, 62), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(257, 2181, 38, 62), True, False)]
+
+        elif animation == "moving":
+            if direction == "right":
+                self.frames = [self.controller.spritesheet.get_image(11, 3408, 62, 40),
+                self.controller.spritesheet.get_image(82, 3409, 58, 38),
+                self.controller.spritesheet.get_image(144, 3405, 61, 42),
+                self.controller.spritesheet.get_image(213, 3406, 58, 43),
+                self.controller.spritesheet.get_image(277, 3411, 59, 38)]
+
+            else:
+                self.frames = [game.transform.flip(self.controller.spritesheet.get_image(11, 3408, 62, 40), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(82, 3409, 58, 38), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(144, 3405, 61, 42), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(213, 3406, 58, 43), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(277, 3411, 59, 38), True, False)]
+
+        if animation != self.currentMove:
+            self.animationLag = 5
+            self.indexAnimation = 0
+        elif self.lastDirection != direction:
+            self.animationLag = 5
+            self.indexAnimation = 0
+
+        self.currentMove = animation
+        self.lastDirection = direction
+
+    def setAnimation(self):
+        if self.indexAnimation < len(self.frames):
+            self.image = self.frames[self.indexAnimation]
+            auxRect = self.image.get_rect()
+            if self.rect.height > auxRect.height:
+                self.rect.y += self.rect.height - auxRect.height
+            elif self.rect.height < auxRect.height:
+                self.rect.y -= auxRect.height - self.rect.height
+            #if self.rect.width > auxRect.width:
+
+            self.rect.height = auxRect.height
+            self.rect.width = auxRect.width
+            self.indexAnimation += 1
+        else:
+            self.indexAnimation = 0
+
     def tick(self):
         if self.frameLag > 0:
+            if self.dx < 20 and self.dx > -20:
+                self.dx += self.gravityX
             self.rect.x += self.dx
+            self.frameLag -= 1
         else:
             self.dx = 10
-        self.animate()
+
+        if self.animationLag < 4:
+            self.animationLag += 1
+        else:
+            self.setAnimation()
+            self.animationLag = 0
 
     def somethingUnderTrue(self):
         self.somethingUnder = True
         self.dy = 0
+        self.gravity = 3
     
     def notSomethingUnder(self):
         self.somethingUnder = False
 
     def update(self):
         self.fall()
-        if self.frameLag == 0:
-            self.dx = 10
 
     def moveH(self,key):
         #Right and left vary depending on the coordiantes, so right will be: x + width = right
@@ -117,7 +145,7 @@ class character(game.sprite.Sprite):
             hits = game.sprite.spritecollide(self,self.controller.platforms,False)
             self.rect.x -= self.dx
 
-            self.setSpriteMovement("moveRight")
+            self.setSpriteMovement("moving","right")
 
             if hits:
                 if hits[0].typeOf == "wall":
@@ -128,10 +156,13 @@ class character(game.sprite.Sprite):
             else:
                 self.rect.x += self.dx
 
-        if key=="left" and self.rect.x - self.dx > 0 and self.frameLag == 0:
+        elif key=="left" and self.rect.x - self.dx > 0 and self.frameLag == 0:
             self.rect.x -= self.dx
             hits = game.sprite.spritecollide(self,self.controller.platforms,False)
             self.rect.x += self.dx
+
+            self.setSpriteMovement("moving","left")
+
             if hits:
                 if hits[0].typeOf == "wall":
                     self.rect.x = hits[0].rect.right
@@ -144,10 +175,10 @@ class character(game.sprite.Sprite):
     def fall(self):
         if not self.somethingUnder:
             self.rect.y -= self.dy
-            if self.dy - self.gravity > -51:
+            if self.dy - self.gravity > -42:
                 self.dy -= self.gravity
             else:
-                self.dy = -51
+                self.dy = -42
 
             if self.dy <= 0:
                 self.falling = True
@@ -175,30 +206,37 @@ class character(game.sprite.Sprite):
     def jump(self):
         if self.somethingUnder:
             self.somethingUnder = False
-            self.dy = 51
-        
+            self.dy = 42
+            self.gravity = 3
+
     def wallJumpRight(self,master):
         self.rect.x += self.dx
         hits = game.sprite.spritecollide(self,self.controller.platforms,False)
         self.rect.x -= self.dx
         if hits and hits[0].typeOf == "wall":
-            self.frameLag = 10
-            self.dx = -16
+            self.frameLag = 20
+            self.gravityX = -2
+            self.dx = 0
             self.movingRight = False
             self.movingLeft = True
             self.somethingUnder = True
+            self.setSpriteMovement("moving","left")
             self.jump()
-            self.dy = 20
+            self.dy = 30
+            
 
     def wallJumpLeft(self,master):
         self.rect.x -= self.dx
         hits = game.sprite.spritecollide(self,self.controller.platforms,False)
         self.rect.x += self.dx
         if hits and hits[0].typeOf == "wall":
-            self.frameLag = 10
-            self.dx = 16
+            self.frameLag = 15
+            self.gravityX = 2
+            self.dx = 0
             self.movingRight = True
             self.movingLeft = False
             self.somethingUnder = True
+            self.setSpriteMovement("moving","right")
             self.jump()
-            self.dy = 20
+            self.dy = 30
+            self.gravity = 2

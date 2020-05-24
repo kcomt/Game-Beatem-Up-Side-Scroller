@@ -11,7 +11,7 @@ class controller:
         game.key.set_repeat(75,75)
         self.clock = game.time.Clock()
         self.running = True
-        self.frameRate = 60
+        self.frameRate = 45
         self.width = 1200
         self.height = 800
         self.master = game.display.set_mode((self.width,self.height))
@@ -32,7 +32,14 @@ class controller:
         self.dPressed = False
         self.aPressed = False
         self.spacePressed = False
-        
+
+    def load(self):
+        # load high score
+        self.dir = path.dirname(__file__)
+        img_dir = path.join(self.dir,'sprites')
+        # load spritesheet image
+        self.spritesheet = Spritesheet(path.join(img_dir,"2.png"))
+
     def handleEvents(self):
         self.move()
         for event in game.event.get():
@@ -46,30 +53,30 @@ class controller:
     def tick(self):
         self.clock.tick(self.frameRate)
         self.character.tick()
-        if self.character.frameLag > 0:
-            self.character.frameLag -= 1
         
     def update(self):
         self.all_sprites.update()
 
     def move(self):
         keys=game.key.get_pressed()
-        if keys[game.K_d]:
-            self.character.moveH("right")
-        if keys[game.K_a]:
-            self.character.moveH("left")
-        if keys[game.K_SPACE]:
-            self.character.jump()
-        
+        anyKeyPressed = False
+
         if keys[game.K_SPACE] and keys[game.K_d]:
             self.character.wallJumpRight(self.master)
-        
+            anyKeyPressed = True
         if keys[game.K_SPACE] and keys[game.K_a]:
             self.character.wallJumpLeft(self.master)
+            anyKeyPressed = True
 
-    def load(self):
-        # load high score
-        self.dir = path.dirname(__file__)
-        img_dir = path.join(self.dir,'sprites')
-        # load spritesheet image
-        self.spritesheet = Spritesheet(path.join(img_dir,"2.png"))
+        if keys[game.K_d]:
+            self.character.moveH("right")
+            anyKeyPressed = True
+        if keys[game.K_a]:
+            self.character.moveH("left")
+            anyKeyPressed = True
+        if keys[game.K_SPACE]:
+            self.character.jump()
+            anyKeyPressed = True
+        if not anyKeyPressed:
+            self.character.setSpriteMovement("standing",self.character.lastDirection)     
+              
