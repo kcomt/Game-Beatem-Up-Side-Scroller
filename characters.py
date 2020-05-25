@@ -54,7 +54,6 @@ class character(game.sprite.Sprite):
 
     def setSpriteMovement(self,animation,direction):
         if animation == "standing":
-            
             if direction == "right":
                 self.frames = [self.controller.spritesheet.get_image(17, 2182, 38, 60),
                 self.controller.spritesheet.get_image(65, 2181, 38, 61),
@@ -95,18 +94,24 @@ class character(game.sprite.Sprite):
         self.currentMove = animation
         self.lastDirection = direction
 
+    def setFrameWidthAndHeight(self):
+        auxRect = self.image.get_rect()
+        if self.rect.height > auxRect.height:
+            self.rect.y += self.rect.height - auxRect.height
+        elif self.rect.height < auxRect.height:
+            self.rect.y -= auxRect.height - self.rect.height
+
+        aux = self.rect.width
+        self.rect.width = auxRect.width
+        self.rect.height = auxRect.height
+        hits = game.sprite.spritecollide(self,self.controller.platforms,False)
+        if hits and hits[0].typeOf == "wall":
+            self.rect.x -= auxRect.width-aux
+
     def setAnimation(self):
         if self.indexAnimation < len(self.frames):
             self.image = self.frames[self.indexAnimation]
-            auxRect = self.image.get_rect()
-            if self.rect.height > auxRect.height:
-                self.rect.y += self.rect.height - auxRect.height
-            elif self.rect.height < auxRect.height:
-                self.rect.y -= auxRect.height - self.rect.height
-            #if self.rect.width > auxRect.width:
-
-            self.rect.height = auxRect.height
-            self.rect.width = auxRect.width
+            self.setFrameWidthAndHeight()
             self.indexAnimation += 1
         else:
             self.indexAnimation = 0
@@ -139,13 +144,13 @@ class character(game.sprite.Sprite):
 
     def moveH(self,key):
         #Right and left vary depending on the coordiantes, so right will be: x + width = right
+        self.setSpriteMovement("moving",key)
+        self.setFrameWidthAndHeight()
         self.colliFromHori = False
         if key=="right" and self.rect.right + self.dx < self.widthOfWindow and self.frameLag == 0:
             self.rect.x += self.dx
             hits = game.sprite.spritecollide(self,self.controller.platforms,False)
             self.rect.x -= self.dx
-
-            self.setSpriteMovement("moving","right")
 
             if hits:
                 if hits[0].typeOf == "wall":
@@ -160,8 +165,6 @@ class character(game.sprite.Sprite):
             self.rect.x -= self.dx
             hits = game.sprite.spritecollide(self,self.controller.platforms,False)
             self.rect.x += self.dx
-
-            self.setSpriteMovement("moving","left")
 
             if hits:
                 if hits[0].typeOf == "wall":
@@ -189,18 +192,21 @@ class character(game.sprite.Sprite):
         hits = game.sprite.spritecollide(self,self.controller.platforms,False)
         self.rect.y -= 1
         if hits:
-            if self.falling and self.rect.top < hits[0].rect.bottom and hits[0].typeOf == "platform" and not self.colliFromHori:
+            print(self.rect.bottom)
+            print(self.colliFromHori)
+            print(hits[0].rect.bottom)
+            if self.falling and self.rect.bottom <= hits[0].rect.bottom and hits[0].typeOf == "platform" and not self.colliFromHori:
                 self.rect.y = hits[0].rect.top - self.rect.height
                 self.somethingUnderTrue()
-
-            if self.falling and self.rect.bottom < hits[0].rect.bottom and hits[0].typeOf == "wall":
+            if self.falling and self.rect.bottom <= hits[0].rect.bottom and hits[0].typeOf == "wall":
                 self.rect.y = hits[0].rect.top - self.rect.height
                 self.somethingUnderTrue()
-
             elif hits[0].typeOf == "floor":
                 self.rect.y = hits[0].rect.top - self.rect.height
                 self.somethingUnderTrue()
         else:
+            print(self.rect.bottom)
+            print(self.dy)
             self.notSomethingUnder()
 
     def jump(self):

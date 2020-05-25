@@ -11,13 +11,13 @@ class controller:
         game.key.set_repeat(75,75)
         self.clock = game.time.Clock()
         self.running = True
-        self.frameRate = 45
+        self.frameRate = 60
         self.width = 1200
         self.height = 800
         self.master = game.display.set_mode((self.width,self.height))
         self.load()
         self.character = characters.character(self.width, self.height,self)
-        self.structure1 = structures.structure(200,20,600,500,"platform")
+        self.structure1 = structures.structure(200,20,500,500,"platform")
         self.structure2 = structures.structure(20,600,1000,self.height-600/2,"wall")
         self.structure3 = structures.structure(1200,20,600,790,"floor")
 
@@ -53,21 +53,14 @@ class controller:
     def tick(self):
         self.clock.tick(self.frameRate)
         self.character.tick()
-        
+
     def update(self):
         self.all_sprites.update()
 
     def move(self):
         keys=game.key.get_pressed()
         anyKeyPressed = False
-
-        if keys[game.K_SPACE] and keys[game.K_d]:
-            self.character.wallJumpRight(self.master)
-            anyKeyPressed = True
-        if keys[game.K_SPACE] and keys[game.K_a]:
-            self.character.wallJumpLeft(self.master)
-            anyKeyPressed = True
-
+        self.character.colliFromHori = False
         if keys[game.K_d]:
             self.character.moveH("right")
             anyKeyPressed = True
@@ -77,6 +70,11 @@ class controller:
         if keys[game.K_SPACE]:
             self.character.jump()
             anyKeyPressed = True
+        if keys[game.K_SPACE] and keys[game.K_d]:
+            self.character.wallJumpRight(self.master)
+            anyKeyPressed = True
+        if keys[game.K_SPACE] and keys[game.K_a]:
+            self.character.wallJumpLeft(self.master)
+            anyKeyPressed = True
         if not anyKeyPressed:
-            self.character.setSpriteMovement("standing",self.character.lastDirection)     
-              
+            self.character.setSpriteMovement("standing",self.character.lastDirection)    
