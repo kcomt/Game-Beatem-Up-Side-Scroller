@@ -4,7 +4,6 @@ game.init()
 controller = controller.controller()
 
 while controller.running:
-    controller.tick()
     controller.handleEvents()
     #update
     controller.update()
@@ -13,5 +12,6 @@ while controller.running:
     #draw
     controller.draw() 
     game.display.flip()
-
+    controller.tick()
+    
 game.quit()
