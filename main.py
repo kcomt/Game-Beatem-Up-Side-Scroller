@@ -13,5 +13,4 @@ while controller.running:
     controller.draw() 
     game.display.flip()
     controller.tick()
-    
 game.quit()

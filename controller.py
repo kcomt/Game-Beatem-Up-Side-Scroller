@@ -28,11 +28,6 @@ class controller:
         self.platforms.add(self.structure2)
         self.platforms.add(self.structure3)
 
-        #keyPressed
-        self.dPressed = False
-        self.aPressed = False
-        self.spacePressed = False
-
     def load(self):
         # load high score
         self.dir = path.dirname(__file__)
@@ -60,20 +55,30 @@ class controller:
         keys=game.key.get_pressed()
         anyKeyPressed = False
         self.character.colliFromHori = False
-        if keys[game.K_d]:
-            self.character.moveH("right")
-            anyKeyPressed = True
-        if keys[game.K_a]:
-            self.character.moveH("left")
-            anyKeyPressed = True
-        if keys[game.K_SPACE]:
-            self.character.jump()
-            anyKeyPressed = True
-        if keys[game.K_SPACE] and keys[game.K_d]:
-            self.character.wallJump(self.master,"right")
-            anyKeyPressed = True
-        if keys[game.K_SPACE] and keys[game.K_a]:
-            self.character.wallJump(self.master,"left")
-            anyKeyPressed = True
-        if not anyKeyPressed:
+        if keys[game.K_o] and keys[game.K_d]:
+            if self.character.somethingUnder:
+                self.character.fowardDash("right")
+                anyKeyPressed = True
+        elif keys[game.K_o] and keys[game.K_a]:
+            if self.character.somethingUnder:
+                self.character.fowardDash("left")
+                anyKeyPressed = True
+        else:
+            if keys[game.K_d]:
+                self.character.moveH("right")
+                anyKeyPressed = True
+            if keys[game.K_a]:
+                self.character.moveH("left")
+                anyKeyPressed = True
+            if keys[game.K_SPACE]:
+                self.character.jump()
+                anyKeyPressed = True
+            if keys[game.K_SPACE] and keys[game.K_d]:
+                self.character.wallJump("right")
+                anyKeyPressed = True
+            if keys[game.K_SPACE] and keys[game.K_a]:
+                self.character.wallJump("left")
+                anyKeyPressed = True
+
+        if not anyKeyPressed and self.character.somethingUnder and self.character.animationLag == 0:
             self.character.setSpriteMovement("standing",self.character.lastDirection)    
