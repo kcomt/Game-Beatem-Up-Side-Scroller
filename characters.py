@@ -12,7 +12,13 @@ class Spritesheet:
         image = game.transform.scale(image, (width*2, height*2))
         return image
 
-#motion can 
+class animationLag:
+    def __init__(self):
+        self.type = None
+        self.amount = 0
+        self.interval = 0
+        self.threshold = 0
+
 class character(game.sprite.Sprite):
     def __init__(self,widthOfWindow,heightOfWindow,controller):
         game.sprite.Sprite.__init__(self)
@@ -40,13 +46,15 @@ class character(game.sprite.Sprite):
         self.gravity = 3
         self.falling = True
         self.wallJumpLag = 0
-        self.animationLag = 0
-        self.animationInterval = 0
-        self.animationThreshold = 4
         self.indexAnimation = 0
         self.currentMove = "standing"
         self.lastDirection = "right"
         self.gravityX = 0
+
+        self.animationLagObj = animationLag()
+        self.animationLagObj.amount = 0
+        self.animationLagObj.interval = 0
+        self.animationLagObj.threshold = 4
 
         self.animationDx = 0
         self.animationDy = 0
@@ -149,12 +157,26 @@ class character(game.sprite.Sprite):
                 game.transform.flip(self.controller.spritesheet.get_image(1369, 1650, 65, 51), True, False),
                 game.transform.flip(self.controller.spritesheet.get_image(1483, 1641, 44, 60), True, False)]
 
+        elif animation == "fowardAir":
+            if direction == "right":
+                self.frames = [self.controller.spritesheet.get_image(14, 1488, 45, 58),
+                self.controller.spritesheet.get_image(108, 1473, 43, 68),
+                self.controller.spritesheet.get_image(215, 1478, 71, 65),
+                self.controller.spritesheet.get_image(312, 1492, 79, 53),
+                self.controller.spritesheet.get_image(405, 1494, 60, 58),
+                self.controller.spritesheet.get_image(500, 1494, 45, 60),
+                self.controller.spritesheet.get_image(581, 1495, 59, 53),
+                self.controller.spritesheet.get_image(677, 1494, 57, 54),
+                self.controller.spritesheet.get_image(775, 1491, 56, 51),
+                self.controller.spritesheet.get_image(880, 1496, 42, 41),
+                self.controller.spritesheet.get_image(976, 1492, 40, 46),
+                self.controller.spritesheet.get_image(1074, 1489, 39, 53)]
 
         if animation != self.currentMove:
-            self.animationInterval = 5
+            self.animationLagObj.interval = 5
             self.indexAnimation = 0
         elif self.lastDirection != direction:
-            self.animationInterval = 5
+            self.animationLagObj.interval = 5
             self.indexAnimation = 0
 
         self.currentMove = animation
@@ -196,16 +218,16 @@ class character(game.sprite.Sprite):
             self.wallJumpLag -= 1
         else:
             self.dx = 10
-        if self.animationInterval < self.animationThreshold:
-            self.animationInterval += 1
+        if self.animationLagObj.interval < self.animationLagObj.threshold:
+            self.animationLagObj.interval += 1
         else:
             self.setAnimation()
-            self.animationInterval = 0
-        if self.animationLag > 0:
+            self.animationLagObj.interval = 0
+        if self.animationLagObj.amount > 0:
             self.animationMovement()
-            self.animationLag -= 1
+            self.animationLagObj.amount -= 1
         else:
-            self.animationThreshold = 4
+            self.animationLagObj.threshold = 4
 
     def animationMovement(self):
         if self.rect.x + self.animationDx > 0:
@@ -221,7 +243,7 @@ class character(game.sprite.Sprite):
                     self.rect.x = hits[0].rect.right
 
     def moveH(self,key):
-        if self.animationLag == 0 and self.wallJumpLag == 0:
+        if self.animationLagObj.amount == 0 and self.wallJumpLag == 0:
             self.colliFromHori = False
             if self.somethingUnder:
                 self.setSpriteMovement("moving",key)
@@ -264,8 +286,9 @@ class character(game.sprite.Sprite):
                 self.dy = -42
             if self.dy <= 0:
                 self.falling = True
-                self.setSpriteMovement("falling",self.lastDirection)
-                self.animationLag =  0
+                if self.animationLagObj.amount == 0 or self.animationLagObj.type != "air":
+                    self.setSpriteMovement("falling",self.lastDirection)
+                #self.animationLag =  0
         else:
             self.falling = False
         self.rect.y += 1
@@ -327,14 +350,26 @@ class character(game.sprite.Sprite):
                 self.dy = 36
     
     def fowardDash(self,direction):
-        if direction == "right":
-            self.animationDx = 6
-            self.animationThreshold = 3
-            self.animationLag = 15*self.animationThreshold
-            self.setSpriteMovement("fowardDash",self.lastDirection)
+        if self.animationLagObj.amount == 0:
+            if direction == "right":
+                self.animationDx = 8
+                self.animationLagObj.type = "ground"
+                self.animationLagObj.threshold = 2
+                self.animationLagObj.amount = 15*self.animationLagObj.threshold
+                self.setSpriteMovement("fowardDash",self.lastDirection)
 
-        elif direction == "left":
-            self.animationDx = -6
-            self.animationThreshold = 3
-            self.animationLag = 15*self.animationThreshold
-            self.setSpriteMovement("fowardDash",self.lastDirection)
+            elif direction == "left":
+                self.animationDx = -8
+                self.animationLagObj.type = "ground"
+                self.animationLagObj.threshold = 2
+                self.animationLagObj.amount = 15*self.animationLagObj.threshold
+                self.setSpriteMovement("fowardDash",self.lastDirection)
+    
+    def fowardAir(self,direction):
+        if self.animationLagObj.amount == 0:
+            if direction == "right":
+                self.animationDx = 0
+                self.animationLagObj.type = "air"
+                self.animationLagObj.threshold = 2
+                self.animationLagObj.amount = 12*self.animationLagObj.threshold
+                self.setSpriteMovement("fowardAir",self.lastDirection)

@@ -59,6 +59,8 @@ class controller:
             if self.character.somethingUnder:
                 self.character.fowardDash("right")
                 anyKeyPressed = True
+            else:
+                self.character.fowardAir("right")
         elif keys[game.K_o] and keys[game.K_a]:
             if self.character.somethingUnder:
                 self.character.fowardDash("left")
@@ -80,5 +82,5 @@ class controller:
                 self.character.wallJump("left")
                 anyKeyPressed = True
 
-        if not anyKeyPressed and self.character.somethingUnder and self.character.animationLag == 0:
+        if not anyKeyPressed and self.character.somethingUnder and self.character.animationLagObj.amount == 0:
             self.character.setSpriteMovement("standing",self.character.lastDirection)    
