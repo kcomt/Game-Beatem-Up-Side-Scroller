@@ -114,6 +114,7 @@ class controller:
                     anyKeyPressed = True
             else:
                 self.downPressed = False
+            #up
             if keys[game.K_SPACE]:
                 self.character.jump()
                 anyKeyPressed = True

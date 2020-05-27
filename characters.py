@@ -18,7 +18,10 @@ class animationLag:
         self.amount = 0
         self.interval = 0
         self.threshold = 0
-
+        self.animationDx = 0
+        self.animationDy = 0
+        self.xAcceleration = 0
+        self.xLimit = 0
 class character(game.sprite.Sprite):
     def __init__(self,widthOfWindow,heightOfWindow,controller):
         game.sprite.Sprite.__init__(self)
@@ -55,9 +58,8 @@ class character(game.sprite.Sprite):
         self.animationLagObj.amount = 0
         self.animationLagObj.interval = 0
         self.animationLagObj.threshold = 4
-
-        self.animationDx = 0
-        self.animationDy = 0
+        self.animationLagObj.xAcceleration = 0
+        self.animationLagObj.animationDx = 0
 
     def somethingUnderTrue(self):
         self.wallJumpLag = 0
@@ -232,13 +234,6 @@ class character(game.sprite.Sprite):
             self.indexAnimation = 0
 
     def updateAnimation(self):
-        if self.wallJumpLag > 0:
-            if self.dx < 17 and self.dx > -17:
-                self.dx += self.gravityX
-            self.rect.x += self.dx
-            self.wallJumpLag -= 1
-        else:
-            self.dx = 10
         if self.animationLagObj.interval < self.animationLagObj.threshold:
             self.animationLagObj.interval += 1
         else:
@@ -250,10 +245,13 @@ class character(game.sprite.Sprite):
         else:
             self.animationLagObj.type = None
             self.animationLagObj.threshold = 4
+            self.animationLagObj.xAcceleration = 0
 
     def animationMovement(self):
-        if self.rect.x + self.animationDx > 0:
-                self.rect.x += self.animationDx
+        if self.rect.x + self.animationLagObj.animationDx > 0:
+                self.rect.x += self.animationLagObj.animationDx
+                if -1*self.animationLagObj.xLimit < self.animationLagObj.animationDx and self.animationLagObj.animationDx < self.animationLagObj.xLimit:
+                    self.animationLagObj.animationDx += self.animationLagObj.xAcceleration
         else:
             self.rect.x = 0
         hits = game.sprite.spritecollide(self,self.controller.platforms,False)
@@ -264,7 +262,7 @@ class character(game.sprite.Sprite):
                     self.rect.x = hits[0].rect.right
 
     def moveH(self,key):
-        if self.animationLagObj.type != "ground" and self.wallJumpLag == 0:
+        if self.animationLagObj.type != "ground" and self.animationLagObj.type != "wallJump":
             self.colliFromHori = False
             if self.animationLagObj.type != "air":
                 if self.somethingUnder:
@@ -298,7 +296,8 @@ class character(game.sprite.Sprite):
                         self.colliFromHori = True
                 else:
                     self.rect.x -= self.dx
-
+        else:
+            print("CANT")
     def fall(self):
         if not self.somethingUnder:
             self.rect.y -= self.dy
@@ -342,46 +341,51 @@ class character(game.sprite.Sprite):
             self.setSpriteMovement("jumping",self.lastDirection)
 
     def wallJump(self,direction):
-        if direction == "right":
-            self.rect.x += self.dx
-            hits = game.sprite.spritecollide(self,self.controller.platforms,False)
-            self.rect.x -= self.dx
-            if hits and hits[0].typeOf == "wall":
-                self.wallJumpLag = 17
-                self.gravityX = -2
-                self.dx = 0
-                self.movingRight = False
-                self.movingLeft = True
-                self.somethingUnder = True
-                self.setSpriteMovement("moving","left")
-                self.jump()
-                self.dy = 36
-        else:
-            self.rect.x -= self.dx
-            hits = game.sprite.spritecollide(self,self.controller.platforms,False)
-            self.rect.x += self.dx
-            if hits and hits[0].typeOf == "wall":
-                self.wallJumpLag = 17
-                self.gravityX = 2
-                self.dx = 0
-                self.movingRight = True
-                self.movingLeft = False
-                self.somethingUnder = True
-                self.setSpriteMovement("moving","right")
-                self.jump()
-                self.dy = 36
+        if self.animationLagObj.amount == 0:
+            if direction == "right":
+                self.rect.x += self.dx
+                hits = game.sprite.spritecollide(self,self.controller.platforms,False)
+                self.rect.x -= self.dx
+                if hits and hits[0].typeOf == "wall":
+                    self.animationLagObj.type = "wallJump"
+                    self.animationLagObj.amount = 17
+                    self.animationLagObj.animationDx = 0
+                    self.animationLagObj.xAcceleration = -2
+                    self.animationLagObj.xLimit = 17
+                    self.movingRight = False
+                    self.movingLeft = True
+                    self.somethingUnder = True
+                    self.setSpriteMovement("moving","left")
+                    self.jump()
+                    self.dy = 36
+            else:
+                self.rect.x -= self.dx
+                hits = game.sprite.spritecollide(self,self.controller.platforms,False)
+                self.rect.x += self.dx
+                if hits and hits[0].typeOf == "wall":
+                    self.animationLagObj.type = "wallJump"
+                    self.animationLagObj.amount = 17
+                    self.animationLagObj.animationDx = 0
+                    self.animationLagObj.xAcceleration = 2
+                    self.animationLagObj.xLimit = 17
+                    self.movingRight = False
+                    self.movingLeft = True
+                    self.somethingUnder = True
+                    self.setSpriteMovement("moving","right")
+                    self.jump()
+                    self.dy = 36
     
     def fowardDash(self,direction):
         if self.animationLagObj.amount == 0:
             if direction == "right":
-                self.animationDx = 8
+                self.animationLagObj.animationDx = 8
                 self.animationLagObj.type = "ground"
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 15*self.animationLagObj.threshold
                 self.setSpriteMovement("fowardDash",self.lastDirection)
 
             elif direction == "left":
-                self.animationDx = -8
+                self.animationLagObj.animationDx = -8
                 self.animationLagObj.type = "ground"
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 15*self.animationLagObj.threshold
@@ -390,18 +394,17 @@ class character(game.sprite.Sprite):
     def fowardAir(self,direction):
         if self.animationLagObj.amount == 0:
             if direction == "right":
-                self.animationDx = 0
+                self.animationLagObj.animationDx = 0
                 self.animationLagObj.type = "air"
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 12*self.animationLagObj.threshold
                 self.setSpriteMovement("fowardAir",self.lastDirection)
 
             if direction == "left":
-                self.animationDx = 0
+                self.animationLagObj.animationDx = 0
                 self.animationLagObj.type = "air"
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 12*self.animationLagObj.threshold
                 self.setSpriteMovement("fowardAir",self.lastDirection)
     
-    def downAir(self,direction):
-        
+    #def downAir(self,direction):
