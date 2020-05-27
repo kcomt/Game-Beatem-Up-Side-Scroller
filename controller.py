@@ -28,6 +28,10 @@ class controller:
         self.platforms.add(self.structure2)
         self.platforms.add(self.structure3)
 
+        self.rightPressed = False
+        self.leftPRessed = False
+        self.downPressed = False
+
     def load(self):
         # load high score
         self.dir = path.dirname(__file__)
@@ -70,12 +74,46 @@ class controller:
                 self.character.fowardAir("left")
                 anyKeyPressed = True
         else:
+            #last key pressed should determine if player should go right, left or down
+            #Right
             if keys[game.K_d]:
-                self.character.moveH("right")
-                anyKeyPressed = True
+                if self.character.currentMove == "crouching":
+                    if not self.rightPressed:
+                        self.rightPressed = True
+                        self.character.moveH("right")
+                        anyKeyPressed = True
+                else:
+                    self.rightPressed = True
+                    self.character.moveH("right")
+                    anyKeyPressed = True
+            else:
+                self.rightPressed = False
+            #left
             if keys[game.K_a]:
-                self.character.moveH("left")
-                anyKeyPressed = True
+                if self.character.currentMove == "crouching":
+                    if not self.leftPressed:
+                        self.leftPressed = True
+                        self.character.moveH("left")
+                        anyKeyPressed = True
+                else:
+                    self.leftPressed = True
+                    self.character.moveH("left")
+                    anyKeyPressed = True
+            else:
+                self.leftPressed = False
+            #down
+            if keys[game.K_s]:
+                if self.character.currentMove == "moving":
+                    if not self.downPressed:
+                        self.downPressed = True
+                        self.character.setSpriteMovement("crouching",self.character.lastDirection)
+                        anyKeyPressed = True
+                elif self.character.somethingUnder and self.character.animationLagObj.amount == 0:
+                    self.downPressed = True
+                    self.character.setSpriteMovement("crouching",self.character.lastDirection)
+                    anyKeyPressed = True
+            else:
+                self.downPressed = False
             if keys[game.K_SPACE]:
                 self.character.jump()
                 anyKeyPressed = True

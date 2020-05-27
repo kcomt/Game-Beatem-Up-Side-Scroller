@@ -125,6 +125,12 @@ class character(game.sprite.Sprite):
                 self.frames = [game.transform.flip(self.controller.spritesheet.get_image(18, 2630, 46, 57), True, False),
                 game.transform.flip(self.controller.spritesheet.get_image(71, 2630, 46, 57), True, False)]
 
+        elif animation == "crouching":
+            if direction == "right":
+                self.frames = [self.controller.spritesheet.get_image(12, 1083, 58, 37)]
+            else:
+                self.frames = [game.transform.flip(self.controller.spritesheet.get_image(12, 1083, 58, 37), True, False)]
+
         elif animation == "fowardDash":
             if direction == "right":
                 self.frames = [self.controller.spritesheet.get_image(23, 1664, 60, 35),
@@ -258,7 +264,6 @@ class character(game.sprite.Sprite):
                     self.rect.x = hits[0].rect.right
 
     def moveH(self,key):
-        print(self.animationLagObj.type != "ground")
         if self.animationLagObj.type != "ground" and self.wallJumpLag == 0:
             self.colliFromHori = False
             if self.animationLagObj.type != "air":
@@ -397,3 +402,6 @@ class character(game.sprite.Sprite):
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 12*self.animationLagObj.threshold
                 self.setSpriteMovement("fowardAir",self.lastDirection)
+    
+    def downAir(self,direction):
+        
