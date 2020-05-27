@@ -61,9 +61,13 @@ class controller:
                 anyKeyPressed = True
             else:
                 self.character.fowardAir("right")
+                anyKeyPressed = True
         elif keys[game.K_o] and keys[game.K_a]:
             if self.character.somethingUnder:
                 self.character.fowardDash("left")
+                anyKeyPressed = True
+            else:
+                self.character.fowardAir("left")
                 anyKeyPressed = True
         else:
             if keys[game.K_d]:
