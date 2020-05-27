@@ -59,6 +59,7 @@ class controller:
         keys=game.key.get_pressed()
         anyKeyPressed = False
         self.character.colliFromHori = False
+        #right foward dash
         if keys[game.K_o] and keys[game.K_d]:
             if self.character.somethingUnder:
                 self.character.fowardDash("right")
@@ -66,6 +67,7 @@ class controller:
             else:
                 self.character.fowardAir("right")
                 anyKeyPressed = True
+        #left foward dash
         elif keys[game.K_o] and keys[game.K_a]:
             if self.character.somethingUnder:
                 self.character.fowardDash("left")
@@ -73,9 +75,17 @@ class controller:
             else:
                 self.character.fowardAir("left")
                 anyKeyPressed = True
+        #down air
+        elif keys[game.K_o] and keys[game.K_s]:
+            if self.character.somethingUnder:
+                self.character.neutralDown()
+                anyKeyPressed = True
+            else:
+                self.character.downAir()
+                anyKeyPressed = True
         else:
             #last key pressed should determine if player should go right, left or down
-            #Right
+            #right
             if keys[game.K_d]:
                 if self.character.currentMove == "crouching":
                     if not self.rightPressed:
@@ -118,9 +128,15 @@ class controller:
             if keys[game.K_SPACE]:
                 self.character.jump()
                 anyKeyPressed = True
+            #attack
+            if keys[game.K_o]:
+                self.character.neutral()
+                anyKeyPressed = True
+            #right wall jump
             if keys[game.K_SPACE] and keys[game.K_d]:
                 self.character.wallJump("right")
                 anyKeyPressed = True
+            #left wall jump
             if keys[game.K_SPACE] and keys[game.K_a]:
                 self.character.wallJump("left")
                 anyKeyPressed = True

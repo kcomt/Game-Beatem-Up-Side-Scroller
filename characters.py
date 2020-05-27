@@ -22,6 +22,7 @@ class animationLag:
         self.animationDy = 0
         self.xAcceleration = 0
         self.xLimit = 0
+
 class character(game.sprite.Sprite):
     def __init__(self,widthOfWindow,heightOfWindow,controller):
         game.sprite.Sprite.__init__(self)
@@ -195,6 +196,88 @@ class character(game.sprite.Sprite):
                 game.transform.flip(self.controller.spritesheet.get_image(976, 1492, 40, 46), True, False),
                 game.transform.flip(self.controller.spritesheet.get_image(1074, 1489, 39, 53), True, False)]
 
+        elif animation == "neutralDown":
+            if direction == "right":
+                self.frames = [self.controller.spritesheet.get_image(116, 1089, 57, 33),
+                self.controller.spritesheet.get_image(215, 1086, 50, 39),
+                self.controller.spritesheet.get_image(319, 1085, 64, 37),
+                self.controller.spritesheet.get_image(421, 1087, 92, 34),
+                self.controller.spritesheet.get_image(522, 1087, 94, 35),
+                self.controller.spritesheet.get_image(623, 1087, 84, 34),
+                self.controller.spritesheet.get_image(724, 1088, 74, 33),
+                self.controller.spritesheet.get_image(825, 1088, 67, 34),
+                self.controller.spritesheet.get_image(927, 1088, 56, 34),
+                self.controller.spritesheet.get_image(1027, 1088, 55, 34)]
+            else:
+                self.frames = [game.transform.flip(self.controller.spritesheet.get_image(116, 1089, 57, 33), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(215, 1086, 50, 39), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(319, 1085, 64, 37), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(421, 1087, 92, 34), True, False),
+                game.transform.flip( self.controller.spritesheet.get_image(522, 1087, 94, 35), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(623, 1087, 84, 34), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(724, 1088, 74, 33), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(825, 1088, 67, 34), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(927, 1088, 56, 34), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(1027, 1088, 55, 34), True, False)]
+
+        elif animation == "downAir":
+            if direction == "right":
+                self.frames = [self.controller.spritesheet.get_image(44, 396, 58, 52),
+                self.controller.spritesheet.get_image(146, 385, 48, 71),
+                self.controller.spritesheet.get_image(257, 397, 42, 55),
+                self.controller.spritesheet.get_image(358, 402, 73, 55),
+                self.controller.spritesheet.get_image(462, 404, 45, 75),
+                self.controller.spritesheet.get_image(555, 407, 54, 50),
+                self.controller.spritesheet.get_image(641, 403, 79, 53),
+                self.controller.spritesheet.get_image(760, 381, 69, 71),
+                self.controller.spritesheet.get_image(892, 380, 38, 71),
+                self.controller.spritesheet.get_image(995, 380, 48, 75),
+                self.controller.spritesheet.get_image(1089, 385, 59, 70),
+                self.controller.spritesheet.get_image(1185, 383, 67, 73),
+                self.controller.spritesheet.get_image(1307, 393, 46, 65),
+                self.controller.spritesheet.get_image(1417, 391, 32, 66)]
+            else:
+                self.frames = [game.transform.flip(self.controller.spritesheet.get_image(44, 396, 58, 52), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(146, 385, 48, 71), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(257, 397, 42, 55), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(358, 402, 73, 55), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(462, 404, 45, 75), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(555, 407, 54, 50), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(641, 403, 79, 53), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(760, 381, 69, 71), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(892, 380, 38, 71), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(995, 380, 48, 75), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(1089, 385, 59, 70), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(1185, 383, 67, 73), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(1307, 393, 46, 65), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(1417, 391, 32, 66), True, False)]
+
+        elif animation == "neutral":
+            if direction == "right":
+                self.frames = [self.controller.spritesheet.get_image(16, 837, 38, 54),
+                self.controller.spritesheet.get_image(117, 838, 38, 53),
+                self.controller.spritesheet.get_image(224, 841, 82, 49),
+                self.controller.spritesheet.get_image(324, 844, 91, 45),
+                self.controller.spritesheet.get_image(424, 825, 52, 64),
+                self.controller.spritesheet.get_image(516, 853, 61, 39),
+                self.controller.spritesheet.get_image(627, 853, 51, 39),
+                self.controller.spritesheet.get_image(730, 851, 48, 42),
+                self.controller.spritesheet.get_image(834, 841, 52, 51),
+                self.controller.spritesheet.get_image(922, 832, 52, 59),
+                self.controller.spritesheet.get_image(1022, 831, 48, 60)]
+            else:
+                self.frames = [game.transform.flip(self.controller.spritesheet.get_image(16, 837, 38, 54), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(117, 838, 38, 53), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(224, 841, 82, 49), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(324, 844, 91, 45), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(424, 825, 52, 64), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(516, 853, 61, 39), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(627, 853, 51, 39), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(730, 851, 48, 42), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(834, 841, 52, 51), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(922, 832, 52, 59), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(1022, 831, 48, 60), True, False)]
+                
         if animation != self.currentMove:
             self.animationLagObj.interval = 5
             self.indexAnimation = 0
@@ -407,4 +490,26 @@ class character(game.sprite.Sprite):
                 self.animationLagObj.amount = 12*self.animationLagObj.threshold
                 self.setSpriteMovement("fowardAir",self.lastDirection)
     
-    #def downAir(self,direction):
+    def neutralDown(self):
+         if self.animationLagObj.amount == 0:
+            self.animationLagObj.animationDx = 0
+            self.animationLagObj.type = "ground"
+            self.animationLagObj.threshold = 2
+            self.animationLagObj.amount = 10*self.animationLagObj.threshold
+            self.setSpriteMovement("neutralDown",self.lastDirection)
+
+    def downAir(self):
+         if self.animationLagObj.amount == 0:
+            self.animationLagObj.animationDx = 0
+            self.animationLagObj.type = "air"
+            self.animationLagObj.threshold = 2
+            self.animationLagObj.amount = 14*self.animationLagObj.threshold
+            self.setSpriteMovement("downAir",self.lastDirection)
+ 
+    def neutral(self):
+        if self.animationLagObj.amount == 0:
+            self.animationLagObj.animationDx = 0
+            self.animationLagObj.type = "ground"
+            self.animationLagObj.threshold = 2
+            self.animationLagObj.amount = 11*self.animationLagObj.threshold
+            self.setSpriteMovement("neutral",self.lastDirection)
