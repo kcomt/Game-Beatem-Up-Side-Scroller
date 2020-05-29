@@ -1,7 +1,24 @@
 import pygame as game
-import characters,structures
+import characters, structures, inGameGUI
 from os import path
-from characters import *
+
+class Spritesheet:
+    # utility class for loading and parsing spritesheets
+    def __init__(self, filename,size):
+        self.spritesheet = game.image.load(filename).convert_alpha()
+        self.size = size
+    def get_image(self, x, y, width, height):
+        # grab an image out of a larger spritesheet
+        image = game.Surface((width, height))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        image = game.transform.scale(image, (width*self.size, height*self.size))
+        return image
+    def get_imageCustomScale(self, x, y, width, height,outPutWidth,outPutHeight):
+        # grab an image out of a larger spritesheet
+        image = game.Surface((width, height))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        image = game.transform.scale(image, (outPutWidth, outPutHeight))
+        return image
 
 class controller:
     def __init__(self):
@@ -13,20 +30,23 @@ class controller:
         self.running = True
         self.frameRate = 60
         self.width = 1200
-        self.height = 800
+        self.height = 900
         self.master = game.display.set_mode((self.width,self.height))
         self.load()
         self.character = characters.character(self.width, self.height,self)
         self.structure1 = structures.structure(200,20,600,400,"platform")
         self.structure2 = structures.structure(20,600,1000,self.height-600/2,"wall")
         self.structure3 = structures.structure(1200,20,600,790,"floor")
+        self.healthBarImage = inGameGUI.healthBar(self.width,self.height,self)
 
         self.all_sprites = game.sprite.Group()
         self.platforms = game.sprite.Group()
+        self.inGameGUIs = game.sprite.Group()
         self.all_sprites.add(self.character)
         self.platforms.add(self.structure1)
         self.platforms.add(self.structure2)
         self.platforms.add(self.structure3)
+        self.inGameGUIs.add(self.healthBarImage)
 
         self.rightPressed = False
         self.leftPRessed = False
@@ -37,7 +57,8 @@ class controller:
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir,'sprites')
         # load spritesheet image
-        self.spritesheet = Spritesheet(path.join(img_dir,"2.png"))
+        self.spritesheet = Spritesheet(path.join(img_dir,"2.png"),2)
+        self.healthBarImage = Spritesheet(path.join(img_dir,"healthBar.png"),1)
 
     def handleEvents(self):
         self.move()
@@ -48,7 +69,8 @@ class controller:
     def draw(self):
         self.all_sprites.draw(self.master)
         self.platforms.draw(self.master)
-        
+        self.inGameGUIs.draw(self.master)
+
     def tick(self):
         self.clock.tick(self.frameRate)
        
