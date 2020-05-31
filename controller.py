@@ -37,16 +37,15 @@ class controller:
         self.structure1 = structures.structure(200,20,600,400,"platform")
         self.structure2 = structures.structure(20,600,1000,self.height-600/2,"wall")
         self.structure3 = structures.structure(1200,20,600,790,"floor")
-        self.healthBarImage = inGameGUI.healthBar(self.width,self.height,self)
+
+        self.inGameUIsObj = inGameGUI.inGameUIs(self.width,self.height,self)
 
         self.all_sprites = game.sprite.Group()
         self.platforms = game.sprite.Group()
-        self.inGameGUIs = game.sprite.Group()
         self.all_sprites.add(self.character)
         self.platforms.add(self.structure1)
         self.platforms.add(self.structure2)
         self.platforms.add(self.structure3)
-        self.inGameGUIs.add(self.healthBarImage)
 
         self.rightPressed = False
         self.leftPRessed = False
@@ -69,7 +68,7 @@ class controller:
     def draw(self):
         self.all_sprites.draw(self.master)
         self.platforms.draw(self.master)
-        self.inGameGUIs.draw(self.master)
+        self.inGameUIsObj.draw(self.master)
 
     def tick(self):
         self.clock.tick(self.frameRate)
