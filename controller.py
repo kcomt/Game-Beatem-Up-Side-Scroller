@@ -56,7 +56,7 @@ class controller:
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir,'sprites')
         # load spritesheet image
-        self.spritesheet = Spritesheet(path.join(img_dir,"2.png"),2)
+        self.spritesheet = Spritesheet(path.join(img_dir,"marth_spritesheet.png"),2)
         self.healthBarImage = Spritesheet(path.join(img_dir,"healthBar.png"),1)
 
     def handleEvents(self):
@@ -75,6 +75,7 @@ class controller:
        
     def update(self):
         self.all_sprites.update()
+        self.inGameUIsObj.setHealth(self.character.health)
 
     def move(self):
         keys=game.key.get_pressed()
@@ -160,6 +161,10 @@ class controller:
             #left wall jump
             if keys[game.K_SPACE] and keys[game.K_a]:
                 self.character.wallJump("left")
+                anyKeyPressed = True
+            #die
+            if keys[game.K_j]:
+                self.character.takeHit(2)
                 anyKeyPressed = True
 
         if not anyKeyPressed and self.character.somethingUnder and self.character.animationLagObj.amount == 0:

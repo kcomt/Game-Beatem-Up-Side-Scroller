@@ -10,7 +10,8 @@ class animationLag:
         self.animationDy = 0
         self.xAcceleration = 0
         self.xLimit = 0
-
+        self.invisibilityFrames = 0
+        
 class character(game.sprite.Sprite):
     def __init__(self,widthOfWindow,heightOfWindow,controller):
         game.sprite.Sprite.__init__(self)
@@ -29,7 +30,9 @@ class character(game.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (50, 200)
         self.setMovementUp()
-
+        self.health = 10
+        self.newHealth = 10
+        
     def setMovementUp(self):
         self.dx = 10
         self.dy = 0
@@ -265,7 +268,25 @@ class character(game.sprite.Sprite):
                 game.transform.flip(self.controller.spritesheet.get_image(834, 841, 52, 51), True, False),
                 game.transform.flip(self.controller.spritesheet.get_image(922, 832, 52, 59), True, False),
                 game.transform.flip(self.controller.spritesheet.get_image(1022, 831, 48, 60), True, False)]
-                
+        
+        elif animation == "flinch":
+            if direction == "right":
+                self.frames = [self.controller.spritesheet.get_image(18, 4218, 43, 60),
+                self.controller.spritesheet.get_image(72, 4216, 37, 62),
+                self.controller.spritesheet.get_image(122, 4218, 34, 60),
+                self.controller.spritesheet.get_image(167, 4219, 38, 59),
+                self.controller.spritesheet.get_image(218, 4219, 35, 58),
+                self.controller.spritesheet.get_image(261, 4218, 48, 59),
+                self.controller.spritesheet.get_image(318, 4217, 42, 60)]
+            else:
+                self.frames = [game.transform.flip(self.controller.spritesheet.get_image(18, 4218, 43, 60), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(72, 4216, 37, 62), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(122, 4218, 34, 60), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(167, 4219, 38, 59), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(218, 4219, 35, 58), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(261, 4218, 48, 59), True, False),
+                game.transform.flip(self.controller.spritesheet.get_image(318, 4217, 42, 60), True, False)]
+
         if animation != self.currentMove:
             self.animationLagObj.interval = 5
             self.indexAnimation = 0
@@ -310,6 +331,8 @@ class character(game.sprite.Sprite):
         else:
             self.setAnimation()
             self.animationLagObj.interval = 0
+            if self.newHealth < self.health:
+                self.health -= 1
         if self.animationLagObj.amount > 0:
             self.animationMovement()
             self.animationLagObj.amount -= 1
@@ -317,7 +340,9 @@ class character(game.sprite.Sprite):
             self.animationLagObj.type = None
             self.animationLagObj.threshold = 4
             self.animationLagObj.xAcceleration = 0
-
+        if self.animationLagObj.invisibilityFrames > 0:
+            self.animationLagObj.invisibilityFrames -= 1
+            
     def animationMovement(self):
         if self.rect.x + self.animationLagObj.animationDx > 0:
                 self.rect.x += self.animationLagObj.animationDx
@@ -452,6 +477,7 @@ class character(game.sprite.Sprite):
                 self.animationLagObj.type = "ground"
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 15*self.animationLagObj.threshold
+                self.animationLagObj.invisibilityFrames = self.animationLagObj.amount
                 self.setSpriteMovement("fowardDash",self.lastDirection)
 
             elif direction == "left":
@@ -459,6 +485,7 @@ class character(game.sprite.Sprite):
                 self.animationLagObj.type = "ground"
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 15*self.animationLagObj.threshold
+                self.animationLagObj.invisibilityFrames = self.animationLagObj.amount
                 self.setSpriteMovement("fowardDash",self.lastDirection)
     
     def fowardAir(self,direction):
@@ -468,6 +495,7 @@ class character(game.sprite.Sprite):
                 self.animationLagObj.type = "air"
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 12*self.animationLagObj.threshold
+                self.animationLagObj.invisibilityFrames = self.animationLagObj.amount
                 self.setSpriteMovement("fowardAir",self.lastDirection)
 
             if direction == "left":
@@ -475,6 +503,7 @@ class character(game.sprite.Sprite):
                 self.animationLagObj.type = "air"
                 self.animationLagObj.threshold = 2
                 self.animationLagObj.amount = 12*self.animationLagObj.threshold
+                self.animationLagObj.invisibilityFrames = self.animationLagObj.amount
                 self.setSpriteMovement("fowardAir",self.lastDirection)
     
     def neutralDown(self):
@@ -483,6 +512,7 @@ class character(game.sprite.Sprite):
             self.animationLagObj.type = "ground"
             self.animationLagObj.threshold = 2
             self.animationLagObj.amount = 10*self.animationLagObj.threshold
+            self.animationLagObj.invisibilityFrames = self.animationLagObj.amount
             self.setSpriteMovement("neutralDown",self.lastDirection)
 
     def downAir(self):
@@ -491,6 +521,7 @@ class character(game.sprite.Sprite):
             self.animationLagObj.type = "air"
             self.animationLagObj.threshold = 2
             self.animationLagObj.amount = 14*self.animationLagObj.threshold
+            self.animationLagObj.invisibilityFrames = self.animationLagObj.amount
             self.setSpriteMovement("downAir",self.lastDirection)
  
     def neutral(self):
@@ -499,4 +530,15 @@ class character(game.sprite.Sprite):
             self.animationLagObj.type = "ground"
             self.animationLagObj.threshold = 2
             self.animationLagObj.amount = 11*self.animationLagObj.threshold
+            self.animationLagObj.invisibilityFrames = self.animationLagObj.amount
             self.setSpriteMovement("neutral",self.lastDirection)
+
+    def takeHit(self,amount):
+        if self.animationLagObj.invisibilityFrames == 0:
+            self.animationLagObj.animationDx = 0
+            self.animationLagObj.type = "ground"
+            self.animationLagObj.threshold = 3
+            self.animationLagObj.amount = 7*self.animationLagObj.threshold
+            self.animationLagObj.invisibilityFrames = self.animationLagObj.amount+15
+            self.newHealth = self.health - amount
+            self.setSpriteMovement("flinch",self.lastDirection)
