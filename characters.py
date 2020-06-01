@@ -28,7 +28,7 @@ class character(game.sprite.Sprite):
         self.image = self.frames[0]
         self.image.set_colorkey((25.1,50.2,0))
         self.rect = self.image.get_rect()
-        self.rect.center = (50, 200)
+        self.rect.center = (100, 100)
         self.setMovementUp()
         self.health = 10
         self.newHealth = 10

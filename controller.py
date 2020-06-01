@@ -34,22 +34,19 @@ class controller:
         self.master = game.display.set_mode((self.width,self.height))
         self.load()
         self.character = characters.character(self.width, self.height,self)
-        self.structure1 = structures.structure(200,20,600,400,"platform")
-        self.structure2 = structures.structure(20,600,1000,self.height-600/2,"wall")
-        self.structure3 = structures.structure(1200,20,600,790,"floor")
-
         self.inGameUIsObj = inGameGUI.inGameUIs(self.width,self.height,self)
-
+        self.listOfStructs = structures.listOfStructures()
+        self.listOfStructs.createPlatforms()
+        
+        self.platforms = self.listOfStructs.structures
         self.all_sprites = game.sprite.Group()
-        self.platforms = game.sprite.Group()
         self.all_sprites.add(self.character)
-        self.platforms.add(self.structure1)
-        self.platforms.add(self.structure2)
-        self.platforms.add(self.structure3)
 
         self.rightPressed = False
         self.leftPRessed = False
         self.downPressed = False
+
+        self.camera = structures.Camera(4000, 2000)
 
     def load(self):
         # load high score
@@ -66,9 +63,13 @@ class controller:
                 self.running = False
 
     def draw(self):
-        self.all_sprites.draw(self.master)
-        self.platforms.draw(self.master)
-        self.inGameUIsObj.draw(self.master)
+        #self.all_sprites.draw(self.master)
+        #self.platforms.draw(self.master)
+        #self.inGameUIsObj.draw(self.master)
+        for sprite in self.all_sprites:
+            self.master.blit(sprite.image, self.camera.apply(sprite))
+        for sprite in self.platforms:
+            self.master.blit(sprite.image, self.camera.apply(sprite))
 
     def tick(self):
         self.clock.tick(self.frameRate)
@@ -76,6 +77,7 @@ class controller:
     def update(self):
         self.all_sprites.update()
         self.inGameUIsObj.setHealth(self.character.health)
+        self.camera.update(self.character)
 
     def move(self):
         keys=game.key.get_pressed()
