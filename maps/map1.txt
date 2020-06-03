@@ -12,7 +12,7 @@ rrrrrrrrrrrrrrrrw..............................................................a
 rrrrrrrrrrrrrrrrw..................................................pppp........a
 rrrrrrrrrrrrrrrrw..............afffffffffffffffw...........pppp................a
 rrrrrrrrrrrrrrrrw..............arrrrrrrrrrrrrrrw........................afffffff
-rrrrrrrrrrrrrrrrw.....pppp.....arrrrrrrrrrrrrrrwffffffw.................arrrrrrr
+rrrrrrrrrrrrrrrrw.....pppp.....arrrrrrrrrrrrrrrwffffffw..........ppp....arrrrrrr
 rrrrrrrrrrrrrrrrw..............arrrrrrrrrrrrrrrwrrrrrrw.................arrrrrrr
 rrrrrrrrrrrrrrrrw..............arrrrrrrrrrrrrrrwrrrrrrw.................arrrrrrr
 rrrrrrrrrrrrrrrrwllllllllllllllarrrrrrrrrrrrrrrwrrrrrrwlllllllllllllllllarrrrrrr

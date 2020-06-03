@@ -354,8 +354,10 @@ class character(game.sprite.Sprite):
         if hits and hits[0].typeOf == "wall":
                 if self.lastDirection == "right":
                     self.rect.x = hits[0].rect.left - self.rect.width
+                    self.animationLagObj.animationDx = 0
                 elif self.lastDirection == "left":
                     self.rect.x = hits[0].rect.right
+                    self.animationLagObj.animationDx = 0
 
     def moveH(self,key):
         if self.animationLagObj.type != "ground" and self.animationLagObj.type != "wallJump":
