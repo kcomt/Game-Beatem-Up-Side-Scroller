@@ -1,5 +1,5 @@
 import pygame as game
-import characters, structures, inGameGUI,camera
+import characters, structures, inGameGUI,camera,background
 from os import path
 
 class Spritesheet:
@@ -49,14 +49,19 @@ class controller:
         self.camera = camera.Camera(4000, 2000)
         self.surface = game.Surface((1200,800))
 
+        self.bgImage = background.backGroundImage(self.width,self.height,self)
+        self.bg = game.sprite.Group()
+        self.bg.add(self.bgImage)
+
     def load(self):
         # load high score
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir,'sprites')
         # load spritesheet image
-        self.spritesheet = Spritesheet(path.join(img_dir,"marth_spritesheet.png"),2)
+        self.spritesheet = Spritesheet(path.join(img_dir,"marthTrans.png"),2)
         self.healthBarImage = Spritesheet(path.join(img_dir,"healthBar.png"),1)
         self.tileSheet = Spritesheet(path.join(img_dir,"tile1.png"),1)
+        self.backGroundImage = Spritesheet(path.join(img_dir,"background1.png"),1)
 
     def handleEvents(self):
         self.move()
@@ -66,7 +71,8 @@ class controller:
 
     def draw(self):
         #self.all_sprites.draw(self.master)
-        #self.platforms.draw(self.master)        
+        #self.platforms.draw(self.master)
+        self.bg.draw(self.master)        
         for sprite in self.all_sprites:
             self.master.blit(sprite.image, self.camera.apply(sprite))
         for sprite in self.platforms:
@@ -80,7 +86,8 @@ class controller:
         self.all_sprites.update()
         self.inGameUIsObj.setHealth(self.character.health)
         self.camera.update(self.character)
-
+        self.bgImage.moveBg()
+        
     def move(self):
         keys=game.key.get_pressed()
         anyKeyPressed = False

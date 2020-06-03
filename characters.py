@@ -26,7 +26,7 @@ class character(game.sprite.Sprite):
         self.controller.spritesheet.get_image(209, 2180, 39, 62),
         self.controller.spritesheet.get_image(257, 2181, 38, 61)]
         self.image = self.frames[0]
-        self.image.set_colorkey((25.1,50.2,0))
+        self.image.set_colorkey((0,0,0))
         self.rect = self.image.get_rect()
         self.rect.center = (100, 100)
         self.setMovementUp()
@@ -295,7 +295,7 @@ class character(game.sprite.Sprite):
             self.indexAnimation = 0
         self.currentMove = animation
         self.lastDirection = direction
-
+        
     def getFrameWidthAndHeight(self):
         auxRect = self.image.get_rect()
         if self.rect.height > auxRect.height:
@@ -321,6 +321,7 @@ class character(game.sprite.Sprite):
             self.image = self.frames[self.indexAnimation]
             self.getFrameWidthAndHeight()
             self.indexAnimation += 1
+            self.image.set_colorkey((0,0,0))
         else:
             self.indexAnimation = 0
 

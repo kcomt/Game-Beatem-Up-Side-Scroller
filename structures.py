@@ -42,6 +42,8 @@ class structure(game.sprite.Sprite):
                     self.image = game.transform.flip(controller.tileSheet.get_imageCustomScale(112, 115, 22, 60,self.width,self.height), True, False)
             self.rect = self.image.get_rect()
             self.rect.center = (x, y)
+        
+        self.image.set_colorkey((0,0,0))
 
 class listOfStructures:
     def __init__(self,controller,mapNum):
@@ -65,7 +67,7 @@ class listOfStructures:
             for j in range(len(self.arr[i])):
                 if self.arr[i][j] == "f":
                     structureObj = structure(50,26,25+j*50,13+i*100,"floor",self.controller,None,self.mapNumber)
-                    structureObj2 = structure(50,74,25+j*50,61+i*100,"filler",self.controller,None,self.mapNumber)
+                    structureObj2 = structure(50,75,25+j*50,61+i*100,"filler",self.controller,None,self.mapNumber)
                     self.structures.add(structureObj)
                     self.structures.add(structureObj2)
                 elif self.arr[i][j] == "w" or self.arr[i][j] == "a":
