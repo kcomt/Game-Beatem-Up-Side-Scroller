@@ -293,7 +293,6 @@ class character(game.sprite.Sprite):
         elif self.lastDirection != direction:
             self.animationLagObj.interval = 5
             self.indexAnimation = 0
-
         self.currentMove = animation
         self.lastDirection = direction
 
@@ -368,7 +367,7 @@ class character(game.sprite.Sprite):
                     self.setSpriteMovement(self.currentMove,key)
                     self.getFrameWidthAndHeight()
 
-            if key=="right" and self.rect.right + self.dx < self.widthOfWindow:
+            if key=="right":
                 self.rect.x += self.dx
                 hits = game.sprite.spritecollide(self,self.controller.platforms,False)
                 self.rect.x -= self.dx
@@ -404,32 +403,37 @@ class character(game.sprite.Sprite):
                 self.falling = True
                 if self.animationLagObj.amount == 0 or self.animationLagObj.type != "air":
                     self.setSpriteMovement("falling",self.lastDirection)
-                #self.animationLag =  0
         else:
             self.falling = False
         self.rect.y += 1
         hits = game.sprite.spritecollide(self,self.controller.platforms,False)
         self.rect.y -= 1
         if hits:
-            if self.falling and hits[0].typeOf == "platform" and not self.colliFromHori:
-                if self.rect.bottom <= hits[0].rect.bottom:
+            if self.falling:
+                if hits[0].typeOf == "platform" and not self.colliFromHori:
+                    if self.rect.bottom <= hits[0].rect.bottom:
+                        self.rect.y = hits[0].rect.top - self.rect.height
+                        self.somethingUnderTrue()
+                    elif self.rect.top <= hits[0].rect.bottom and self.lastBottom < hits[0].rect.bottom:
+                        self.rect.y = hits[0].rect.top - self.rect.height
+                        self.somethingUnderTrue()
+                if self.rect.bottom <= hits[0].rect.bottom and hits[0].typeOf == "wall":
                     self.rect.y = hits[0].rect.top - self.rect.height
                     self.somethingUnderTrue()
-                elif self.rect.top <= hits[0].rect.bottom and self.lastBottom < hits[0].rect.bottom:
+                elif hits[0].typeOf == "floor":
                     self.rect.y = hits[0].rect.top - self.rect.height
                     self.somethingUnderTrue()
-            if self.falling and self.rect.bottom <= hits[0].rect.bottom and hits[0].typeOf == "wall":
-                self.rect.y = hits[0].rect.top - self.rect.height
-                self.somethingUnderTrue()
-            elif hits[0].typeOf == "floor":
-                self.rect.y = hits[0].rect.top - self.rect.height
-                self.somethingUnderTrue()
+            else:
+                if hits[0].typeOf == "ceiling":
+                    self.rect.y = hits[0].rect.bottom
+                    self.dy = 0
         else:
             self.notSomethingUnder()
             self.lastBottom = self.rect.bottom
 
     def jump(self):
         if self.somethingUnder:
+            self.falling = False
             self.somethingUnder = False
             self.dy = 42
             self.gravity = 3

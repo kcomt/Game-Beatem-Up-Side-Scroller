@@ -1,5 +1,5 @@
 import pygame as game
-import characters, structures, inGameGUI
+import characters, structures, inGameGUI,camera
 from os import path
 
 class Spritesheet:
@@ -35,7 +35,7 @@ class controller:
         self.load()
         self.character = characters.character(self.width, self.height,self)
         self.inGameUIsObj = inGameGUI.inGameUIs(self.width,self.height,self)
-        self.listOfStructs = structures.listOfStructures()
+        self.listOfStructs = structures.listOfStructures(self,1)
         self.listOfStructs.createPlatforms()
         
         self.platforms = self.listOfStructs.structures
@@ -46,7 +46,8 @@ class controller:
         self.leftPRessed = False
         self.downPressed = False
 
-        self.camera = structures.Camera(4000, 2000)
+        self.camera = camera.Camera(4000, 2000)
+        self.surface = game.Surface((1200,800))
 
     def load(self):
         # load high score
@@ -55,6 +56,7 @@ class controller:
         # load spritesheet image
         self.spritesheet = Spritesheet(path.join(img_dir,"marth_spritesheet.png"),2)
         self.healthBarImage = Spritesheet(path.join(img_dir,"healthBar.png"),1)
+        self.tileSheet = Spritesheet(path.join(img_dir,"tile1.png"),1)
 
     def handleEvents(self):
         self.move()
@@ -64,13 +66,13 @@ class controller:
 
     def draw(self):
         #self.all_sprites.draw(self.master)
-        #self.platforms.draw(self.master)
-        #self.inGameUIsObj.draw(self.master)
+        #self.platforms.draw(self.master)        
         for sprite in self.all_sprites:
             self.master.blit(sprite.image, self.camera.apply(sprite))
         for sprite in self.platforms:
             self.master.blit(sprite.image, self.camera.apply(sprite))
-
+        self.inGameUIsObj.draw(self.master)
+        
     def tick(self):
         self.clock.tick(self.frameRate)
        

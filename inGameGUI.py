@@ -1,5 +1,16 @@
 import pygame as game
 
+class BlackBackColor(game.sprite.Sprite):
+    def __init__(self,widthOfWindow,heightOfWindow,controller):
+        game.sprite.Sprite.__init__(self)
+        self.controller = controller
+        self.widthOfWindow = widthOfWindow
+        self.heightOfWindow = heightOfWindow
+        self.image = game.Surface((1200, 100))
+        self.image.fill((0,0,0))
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.rect.width/2, 850)
+
 class healthBarBackColor(game.sprite.Sprite):
     def __init__(self,widthOfWindow,heightOfWindow,controller):
         game.sprite.Sprite.__init__(self)
@@ -9,7 +20,7 @@ class healthBarBackColor(game.sprite.Sprite):
         self.image = game.Surface((600, 55))
         self.image.fill((150,150,150))
         self.rect = self.image.get_rect()
-        self.rect.center = (320, 850)
+        self.rect.center = (self.rect.width/2 + 20, 850)
 
 class healthBar(game.sprite.Sprite):
     def __init__(self,widthOfWindow,heightOfWindow,controller):
@@ -42,12 +53,15 @@ class inGameUIs:
     def __init__(self,widthOfWindow,heightOfWindow,controller):
         self.hbBackColor = healthBarBackColor(widthOfWindow,heightOfWindow,controller)
         self.healthBar = healthBar(widthOfWindow,heightOfWindow,controller)
+        self.blackBackCOlor = BlackBackColor(widthOfWindow,heightOfWindow,controller)
+
         self.inGameGUIs = game.sprite.Group()
+        self.inGameGUIs.add(self.blackBackCOlor)
         self.inGameGUIs.add(self.hbBackColor)
         self.inGameGUIs.add(self.healthBar)
 
     def draw(self,master):
         self.inGameGUIs.draw(master)
-
+        
     def setHealth(self,healthIndex):
         self.healthBar.setHealth(healthIndex)
