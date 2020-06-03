@@ -23,9 +23,6 @@ class Spritesheet:
 class controller:
     def __init__(self):
         game.init()
-        game.mixer.init()
-        #(delay,interval), the delay is the number of milliseconds before the first repeated pygame.KEYDOWN will be sent
-        game.key.set_repeat(75,75)
         self.clock = game.time.Clock()
         self.running = True
         self.frameRate = 60
@@ -33,25 +30,16 @@ class controller:
         self.height = 900
         self.master = game.display.set_mode((self.width,self.height))
         self.load()
+        self.loadPlatforms()
         self.character = characters.character(self.width, self.height,self)
         self.inGameUIsObj = inGameGUI.inGameUIs(self.width,self.height,self)
-        self.listOfStructs = structures.listOfStructures(self,1)
-        self.listOfStructs.createPlatforms()
-        
-        self.platforms = self.listOfStructs.structures
+        self.level = 1
         self.all_sprites = game.sprite.Group()
         self.all_sprites.add(self.character)
 
         self.rightPressed = False
         self.leftPRessed = False
         self.downPressed = False
-
-        self.camera = camera.Camera(4000, 2000)
-        self.surface = game.Surface((1200,800))
-
-        self.bgImage = background.backGroundImage(self.width,self.height,self)
-        self.bg = game.sprite.Group()
-        self.bg.add(self.bgImage)
 
     def load(self):
         # load high score
@@ -63,6 +51,16 @@ class controller:
         self.tileSheet = Spritesheet(path.join(img_dir,"tile1.png"),1)
         self.backGroundImage = Spritesheet(path.join(img_dir,"background1.png"),1)
 
+    def loadPlatforms(self):
+        self.listOfStructs = structures.listOfStructures(self,1)
+        self.listOfStructs.createPlatforms()
+        self.platforms = self.listOfStructs.structures
+        self.fillers = self.listOfStructs.fillers
+        self.camera = camera.Camera(8000, 2000)
+        self.bgImage = background.backGroundImage(self.width,self.height,self)
+        self.bg = game.sprite.Group()
+        self.bg.add(self.bgImage)
+
     def handleEvents(self):
         self.move()
         for event in game.event.get():
@@ -70,13 +68,13 @@ class controller:
                 self.running = False
 
     def draw(self):
-        #self.all_sprites.draw(self.master)
-        #self.platforms.draw(self.master)
-        self.bg.draw(self.master)        
+        self.bg.draw(self.master)    
         for sprite in self.all_sprites:
             self.master.blit(sprite.image, self.camera.apply(sprite))
         for sprite in self.platforms:
             self.master.blit(sprite.image, self.camera.apply(sprite))
+        for sprite in self.fillers:
+            self.master.blit(sprite.image, self.camera.apply(sprite))    
         self.inGameUIsObj.draw(self.master)
         
     def tick(self):
@@ -87,7 +85,19 @@ class controller:
         self.inGameUIsObj.setHealth(self.character.health)
         self.camera.update(self.character)
         self.bgImage.moveBg()
-        
+    
+    def nextLevel(self):
+        self.dir = path.dirname(__file__)
+        img_dir = path.join(self.dir,'sprites')
+        self.level += 1
+        if self.level == 2:
+            self.camera = camera.Camera(8000, 2000)
+        self.tileSheet = Spritesheet(path.join(img_dir,"tile"+str(self.level)+".png"),1)
+        self.backGroundImage = Spritesheet(path.join(img_dir,"background1.png"),1)
+        self.listOfStructs = structures.listOfStructures(self,2)
+        self.listOfStructs.createPlatforms()
+        self.platforms = self.listOfStructs.structures
+
     def move(self):
         keys=game.key.get_pressed()
         anyKeyPressed = False
@@ -176,6 +186,10 @@ class controller:
             #die
             if keys[game.K_j]:
                 self.character.takeHit(2)
+                anyKeyPressed = True
+            #nextLevel
+            if keys[game.K_b]:
+                self.nextLevel()
                 anyKeyPressed = True
 
         if not anyKeyPressed and self.character.somethingUnder and self.character.animationLagObj.amount == 0:

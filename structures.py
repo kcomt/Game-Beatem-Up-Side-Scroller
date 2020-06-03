@@ -60,6 +60,7 @@ class listOfStructures:
             self.arr.append(self.x[0])
 
         self.structures = game.sprite.Group()
+        self.fillers = game.sprite.Group()
         self.controller = controller
 
     def createPlatforms(self):
@@ -69,7 +70,7 @@ class listOfStructures:
                     structureObj = structure(50,26,25+j*50,13+i*100,"floor",self.controller,None,self.mapNumber)
                     structureObj2 = structure(50,75,25+j*50,61+i*100,"filler",self.controller,None,self.mapNumber)
                     self.structures.add(structureObj)
-                    self.structures.add(structureObj2)
+                    self.fillers.add(structureObj2)
                 elif self.arr[i][j] == "w" or self.arr[i][j] == "a":
                     if self.arr[i][j] == "w":
                         structureObj = structure(50,100,25+j*50,50+i*100,"wall",self.controller,"right",self.mapNumber)
@@ -85,4 +86,4 @@ class listOfStructures:
                     self.structures.add(structureObj)
                 elif self.arr[i][j] == "r":
                     structureObj = structure(50,100,25+j*50,50+i*100,"filler",self.controller,None,self.mapNumber)
-                    self.structures.add(structureObj)
+                    self.fillers.add(structureObj)

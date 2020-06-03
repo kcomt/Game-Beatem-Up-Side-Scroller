@@ -11,5 +11,9 @@ class backGroundImage(game.sprite.Sprite):
         self.rect.center = (600, 400)
         
     def moveBg(self):
-        self.image = self.controller.backGroundImage.get_imageCustomScale(self.controller.character.rect.center[0] // 15, 
-        self.controller.character.rect.bottom//15, 1200, 800,1200,800)
+        y = self.controller.character.rect.bottom//15
+        if self.controller.character.lastDirection == "right":
+            x = self.controller.character.rect.x // 15
+        else:
+            x = self.controller.character.rect.right // 15
+        self.image = self.controller.backGroundImage.get_imageCustomScale(x, y, 1200, 800,1200,800)
